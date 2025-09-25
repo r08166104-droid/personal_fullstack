@@ -1,7 +1,35 @@
 import { Link } from "react-router-dom";
 import "./register.scss";
+import { useState } from "react";
+import axios from "axios";
 
 const Register = () => {
+  const [inputs, setInputs] = useState({
+    name: "",
+    email: "",
+    username: "",
+    password: "",
+  });
+
+  const [err, setErr] = useState(null);
+
+  const handleOnchange = (target) => {
+    setInputs((prev) => {
+      return { ...prev, [target.name]: target.value };
+    });
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:3000/api/auth/register", {
+        ...inputs,
+      });
+    } catch (error) {
+      setErr(error);
+    }
+  };
+
   return (
     <div className="register">
       <div className="card">
@@ -14,17 +42,50 @@ const Register = () => {
           </p>
           <span>Do you have an account?</span>
           <Link to="/login">
-          <button>Login</button>
+            <button>Login</button>
           </Link>
         </div>
         <div className="right">
           <h1>Register</h1>
           <form>
-            <input type="text" placeholder="Username" />
-            <input type="email" placeholder="Email" />
-            <input type="password" placeholder="Password" />
-            <input type="text" placeholder="Name" />
-            <button>Register</button>
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={inputs.username}
+              onChange={(e) => {
+                handleOnchange(e.target);
+              }}
+            />
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={inputs.email}
+              onChange={(e) => {
+                handleOnchange(e.target);
+              }}
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={inputs.password}
+              onChange={(e) => {
+                handleOnchange(e.target);
+              }}
+            />
+            <input
+              name="name"
+              type="text"
+              placeholder="Name"
+              value={inputs.name}
+              onChange={(e) => {
+                handleOnchange(e.target);
+              }}
+            />
+            {err && <div style={{ color: "red" }}>{err.response.data}</div>}
+            <button onClick={(e) => handleRegister(e)}>Register</button>
           </form>
         </div>
       </div>
